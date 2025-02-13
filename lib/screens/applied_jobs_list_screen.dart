@@ -200,7 +200,7 @@ class AppliedJobsListScreen extends StatelessWidget {
                   role,
                   style: GoogleFonts.plusJakartaSans(
                     color: Colors.white,
-                    fontSize: 16,
+                    fontSize: 20,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -212,46 +212,24 @@ class AppliedJobsListScreen extends StatelessWidget {
                     fontSize: 14,
                   ),
                 ),
-                const SizedBox(height: 8),
-                Row(
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
                   children: [
-                    Text(
+                    _buildSpecChip(
                       timeAgo,
-                      style: GoogleFonts.plusJakartaSans(
-                        color: Colors.white54,
-                        fontSize: 12,
-                      ),
+                      Icons.access_time_outlined,
                     ),
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 8),
-                      width: 4,
-                      height: 4,
-                      decoration: const BoxDecoration(
-                        color: Colors.white54,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    Text(
+                    _buildSpecChip(
                       type,
-                      style: GoogleFonts.plusJakartaSans(
-                        color: Colors.white54,
-                        fontSize: 12,
-                      ),
+                      Icons.work_outline,
                     ),
-                    if (status != null) ...[
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 8),
-                        width: 4,
-                        height: 4,
-                        decoration: const BoxDecoration(
-                          color: Colors.white54,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
+                    if (status != null)
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 8,
-                          vertical: 2,
+                          vertical: 4,
                         ),
                         decoration: BoxDecoration(
                           color: isRejected
@@ -270,10 +248,37 @@ class AppliedJobsListScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                    ],
                   ],
                 ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSpecChip(String label, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            color: Colors.white54,
+            size: 14,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: GoogleFonts.plusJakartaSans(
+              color: Colors.white54,
+              fontSize: 12,
             ),
           ),
         ],
