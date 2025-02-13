@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'jobs_screen.dart';
 import 'filter_pages/applied_page.dart';
+import 'applied_jobs_list_screen.dart';
 
 class ApplicationSuccessScreen extends StatelessWidget {
   const ApplicationSuccessScreen({super.key});
@@ -135,7 +136,7 @@ class ApplicationSuccessScreen extends StatelessWidget {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const AppliedPage(),
+                            builder: (context) => const AppliedJobsListScreen(),
                           ),
                         );
                       },
