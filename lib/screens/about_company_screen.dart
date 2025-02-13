@@ -222,7 +222,7 @@ class AboutCompanyScreen extends StatelessWidget {
             ),
             child: Icon(
               icon,
-              color: const Color(0xFFCCFF00),
+              color: const Color.fromARGB(255, 252, 252, 252),
               size: 20,
             ),
           ),
