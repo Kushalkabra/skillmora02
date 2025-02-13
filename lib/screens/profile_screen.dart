@@ -318,6 +318,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               color: const Color.fromARGB(255, 255, 255, 255),
               height: 1.5,
             ),
+
           ),
           if (showMore)
             Align(

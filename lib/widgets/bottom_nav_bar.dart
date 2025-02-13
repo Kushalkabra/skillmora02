@@ -26,12 +26,14 @@ class BottomNavBar extends StatelessWidget {
         // TODO: Navigate to Resume screen
         break;
       case 2: // Notifications
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const NotificationScreen(),
-          ),
-        );
+        if (currentIndex != 2) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const NotificationScreen(),
+            ),
+          );
+        }
         break;
       case 3: // Profile
         Navigator.pushReplacement(

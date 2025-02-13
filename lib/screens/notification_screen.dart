@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../widgets/bottom_nav_bar.dart';
+import './jobs_screen.dart';
 
 class NotificationScreen extends StatelessWidget {
   const NotificationScreen({super.key});
@@ -8,13 +10,14 @@ class NotificationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFCCFF00),
+      backgroundColor: Colors.black,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
-            Padding(
+            // Header with black background
+            Container(
+              color: Colors.black,
               padding: const EdgeInsets.all(16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -22,14 +25,20 @@ class NotificationScreen extends StatelessWidget {
                   Row(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.arrow_back),
-                        color: Colors.black,
-                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const JobsScreen(),
+                            ),
+                          );
+                        },
                       ),
                       Text(
                         'Notification',
                         style: GoogleFonts.plusJakartaSans(
-                          color: Colors.black,
+                          color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.w600,
                         ),
@@ -38,7 +47,7 @@ class NotificationScreen extends StatelessWidget {
                   ),
                   IconButton(
                     icon: const Icon(Icons.pause_circle_outline),
-                    color: Colors.black,
+                    color: Colors.white,
                     iconSize: 28,
                     onPressed: () {},
                   ),
@@ -46,20 +55,17 @@ class NotificationScreen extends StatelessWidget {
               ),
             ),
 
-            // Today Section
+            // Content section with neon background
             Expanded(
               child: Container(
-                color: Colors.black,
+                color: const Color(0xFFCCFF00),
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildDateSection('Today'),
-                      _buildNotificationItem(
-                        'Your application is moved to reviewing',
-                        '1day Ago',
-                        'Spotify Application Update',
-                        'assets/icons/spotify-svgrepo-com.svg',
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: _buildDateSection('Today'),
                       ),
                       _buildNotificationItem(
                         'Your application is moved to reviewing',
@@ -73,6 +79,13 @@ class NotificationScreen extends StatelessWidget {
                         'Spotify Application Update',
                         'assets/icons/spotify-svgrepo-com.svg',
                       ),
+                      _buildNotificationItem(
+                        'Your application is moved to reviewing',
+                        '1day Ago',
+                        'Spotify Application Update',
+                        'assets/icons/spotify-svgrepo-com.svg',
+                      ),
+                      const SizedBox(height: 8),
                       _buildDateSection('Last Week'),
                       _buildNotificationItem(
                         'Your application is moved to reviewing',
@@ -87,19 +100,7 @@ class NotificationScreen extends StatelessWidget {
             ),
 
             // Bottom Navigation
-            Container(
-              color: Colors.black,
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildNavItem(Icons.work_outline, false),
-                  _buildNavItem(Icons.edit_note, false),
-                  _buildNavItem(Icons.notifications_outlined, true),
-                  _buildNavItem(Icons.person_outline, false),
-                ],
-              ),
-            ),
+            const BottomNavBar(currentIndex: 2),
           ],
         ),
       ),
@@ -112,9 +113,9 @@ class NotificationScreen extends StatelessWidget {
       child: Text(
         date,
         style: GoogleFonts.plusJakartaSans(
-          color: const Color(0xFFCCFF00),
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
+          color: Colors.black,
+          fontSize: 20,
+          fontWeight: FontWeight.w800,
         ),
       ),
     );
@@ -126,86 +127,88 @@ class NotificationScreen extends StatelessWidget {
     String subtitle,
     String iconPath,
   ) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1C1C1E),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: const Color(0xFF2C2C2E),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: SvgPicture.asset(
-              iconPath,
-              colorFilter: const ColorFilter.mode(
-                Colors.white,
-                BlendMode.srcIn,
-              ),
-            ),
+    return Row(
+      children: [
+        // Bullet point
+        Container(
+          margin: const EdgeInsets.only(left: 16),
+          width: 8,
+          height: 8,
+          decoration: const BoxDecoration(
+            color: Color.fromARGB(255, 0, 0, 0),
+            shape: BoxShape.circle,
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        ),
+        // Notification card
+        Expanded(
+          child: Container(
+            margin: const EdgeInsets.fromLTRB(8, 0, 16, 12), // Adjusted left margin
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 0, 0, 0),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        title,
+                Container(
+                  width: 48,
+                  height: 48,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2C2C2E),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: SvgPicture.asset(
+                    iconPath,
+                    colorFilter: const ColorFilter.mode(
+                      Colors.white,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              title,
+                              style: GoogleFonts.plusJakartaSans(
+                                color: const Color(0xFFCCFF00),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            time,
+                            style: GoogleFonts.plusJakartaSans(
+                              color: Colors.white54,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle,
                         style: GoogleFonts.plusJakartaSans(
-                          color: const Color(0xFFCCFF00),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
+                          color: Colors.white54,
+                          fontSize: 12,
                         ),
                       ),
-                    ),
-                    Text(
-                      time,
-                      style: GoogleFonts.plusJakartaSans(
-                        color: Colors.white54,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: GoogleFonts.plusJakartaSans(
-                    color: Colors.white54,
-                    fontSize: 12,
+                    ],
                   ),
                 ),
               ],
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, bool isSelected) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFFCCFF00) : Colors.transparent,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Icon(
-        icon,
-        color: isSelected ? Colors.black : Colors.white,
-        size: 24,
-      ),
+        ),
+      ],
     );
   }
 } 

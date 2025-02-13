@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../widgets/bottom_nav_bar.dart';
+import '../screens/review_screen.dart';
 
 class AboutCompanyScreen extends StatelessWidget {
   final String company;
@@ -80,84 +81,98 @@ class AboutCompanyScreen extends StatelessWidget {
             ),
 
             // Response Time Card
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(24),
-                  bottomRight: Radius.circular(24),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ReviewScreen(
+                      company: company,
+                      logoPath: logoPath,
+                      color: color,
+                    ),
+                  ),
+                );
+              },
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(24),
+                    bottomRight: Radius.circular(24),
+                  ),
                 ),
-              ),
-              child: Row(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Usually Replies',
-                        style: GoogleFonts.plusJakartaSans(
-                          color: Colors.black,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      Text(
-                        'in 1 day.',
-                        style: GoogleFonts.plusJakartaSans(
-                          color: Colors.black,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(width: 24),
-                  Container(
-                    width: 3,
-                    height: 40,
-                    color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.3),
-                  ),
-                  const SizedBox(width: 24),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                child: Row(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(5, (index) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 3),
-                              child: Container(
-                                width: 24,
-                                height: 24,
-                                decoration: BoxDecoration(
-                                  color: index < 4 ? const Color(0xFFCCFF00) : Colors.grey.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: Icon(
-                                  Icons.description_outlined,
-                                  color: index < 4 ? Colors.black : Colors.grey,
-                                  size: 16,
-                                ),
-                              ),
-                            );
-                          }),
-                        ),
-                        const SizedBox(height: 6),
                         Text(
-                          '1000+ Reviewers',
+                          'Usually Replies',
                           style: GoogleFonts.plusJakartaSans(
-                            color: Colors.black54,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
+                            color: Colors.black,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        Text(
+                          'in 1 day.',
+                          style: GoogleFonts.plusJakartaSans(
+                            color: Colors.black,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 24),
+                    Container(
+                      width: 3,
+                      height: 40,
+                      color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.3),
+                    ),
+                    const SizedBox(width: 24),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(5, (index) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 3),
+                                child: Container(
+                                  width: 24,
+                                  height: 24,
+                                  decoration: BoxDecoration(
+                                    color: index < 4 ? const Color(0xFFCCFF00) : Colors.grey.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: Icon(
+                                    Icons.description_outlined,
+                                    color: index < 4 ? Colors.black : Colors.grey,
+                                    size: 16,
+                                  ),
+                                ),
+                              );
+                            }),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            '1000+ Reviewers',
+                            style: GoogleFonts.plusJakartaSans(
+                              color: Colors.black54,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
 
