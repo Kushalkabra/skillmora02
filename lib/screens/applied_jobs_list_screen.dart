@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+import '../providers/jobs_provider.dart';
+import '../models/job_model.dart';
 
 class AppliedJobsListScreen extends StatelessWidget {
   const AppliedJobsListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final jobsProvider = Provider.of<JobsProvider>(context);
+    final appliedJobs = jobsProvider.appliedJobsModel; // Use the model getter
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -60,6 +66,9 @@ class AppliedJobsListScreen extends StatelessWidget {
                             color: Colors.white54,
                           ),
                         ),
+                        onChanged: (value) {
+                          // Implement search functionality if needed
+                        },
                       ),
                     ),
                   ],
@@ -82,49 +91,65 @@ class AppliedJobsListScreen extends StatelessWidget {
 
             // Applied Jobs List
             Expanded(
-              child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                children: [
-                  _buildJobCard(
-                    'Product Designer',
-                    'LinkedIn Inc.',
-                    '4 Days Ago',
-                    'Full Time',
-                    'Reviewing',
-                    'assets/icons/linkedin.png',
-                  ),
-                  _buildJobCard(
-                    'Graphic Designer',
-                    'Figma Inc.',
-                    '1 Week Ago',
-                    'Full Time',
-                    null,
-                    'assets/icons/figma.png',
-                  ),
-                  _buildJobCard(
-                    'Product Designer',
-                    'Spotify Inc.',
-                    '7 Days Ago',
-                    'Hybrid',
-                    null,
-                    'assets/icons/spotify-svgrepo-com.svg',
-                  ),
-                  _buildJobCard(
-                    'App Developer',
-                    'Google Inc.',
-                    '4 Days Ago',
-                    'Full Time',
-                    'Rejected',
-                    'assets/icons/google-178-svgrepo-com.svg',
-                    isRejected: true,
-                  ),
-                ],
-              ),
+              child: appliedJobs.isEmpty
+                  ? Center(
+                      child: Text(
+                        'No applied jobs yet',
+                        style: GoogleFonts.plusJakartaSans(
+                          color: Colors.white54,
+                          fontSize: 16,
+                        ),
+                      ),
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: appliedJobs.length,
+                      itemBuilder: (context, index) {
+                        final job = appliedJobs[index];
+                        return _buildJobCard(
+                          job.role,
+                          job.company,
+                          job.postedDate,
+                          job.tags.contains('Hybrid') ? 'Hybrid' : 'Full Time',
+                          _getApplicationStatus(index),
+                          _getCompanyLogo(job.company),
+                          isRejected: _isApplicationRejected(index),
+                        );
+                      },
+                    ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  String _getCompanyLogo(String company) {
+    switch (company.toLowerCase()) {
+      case 'google':
+        return 'assets/icons/google-178-svgrepo-com.svg';
+      case 'airbnb':
+        return 'assets/icons/airbnb-179-svgrepo-com.svg';
+      case 'spotify':
+        return 'assets/icons/spotify-svgrepo-com.svg';
+      case 'microsoft':
+        return 'assets/icons/microsoft-svgrepo-com.svg';
+      case 'apple':
+        return 'assets/icons/apple-inc-svgrepo-com.svg';
+      default:
+        return 'assets/icons/google-178-svgrepo-com.svg'; // Default logo
+    }
+  }
+
+  String? _getApplicationStatus(int index) {
+    // Mock status logic - you can implement real status tracking
+    if (index == 0) return 'Reviewing';
+    if (index == 3) return 'Rejected';
+    return null;
+  }
+
+  bool _isApplicationRejected(int index) {
+    return index == 3;
   }
 
   Widget _buildJobCard(

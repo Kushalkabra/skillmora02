@@ -9,6 +9,12 @@ class JobsProvider extends ChangeNotifier {
   final List<JobModel> _appliedJobs = [];
 
   List<JobModel> get allJobs => _allJobs;
+  
+  // For accessing the raw JobModel data
+  List<JobModel> get appliedJobsModel => _appliedJobs;
+  List<JobModel> get savedJobsModel => _savedJobs;
+  
+  // For UI widgets that need JobCard
   List<JobCard> get savedJobs {
     return _savedJobs.map((job) => JobCard(
       company: job.company,
@@ -22,6 +28,7 @@ class JobsProvider extends ChangeNotifier {
       onRemove: () => unsaveJob(job),
     )).toList();
   }
+
   List<JobCard> get appliedJobs {
     return _appliedJobs.map((job) => JobCard(
       company: job.company,
