@@ -6,6 +6,7 @@ import '../providers/jobs_provider.dart';
 import '../widgets/job_card.dart';
 import '../models/job_model.dart';
 import 'apply_job_screen.dart';
+import 'about_company_screen.dart';
 
 class JobDetailsScreen extends StatefulWidget {
   final String company;
@@ -69,12 +70,12 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
                         icon: const Icon(Icons.arrow_back, color: Colors.white),
                         onPressed: () => Navigator.pop(context),
                       ),
+                      const SizedBox(width: 8),
                       Text(
                         'Job Details',
                         style: GoogleFonts.plusJakartaSans(
@@ -83,16 +84,56 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: const BoxDecoration(
-                          color: Color(0xFF1C1C1E),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.bookmark_outline,
-                          color: Colors.white,
-                          size: 20,
+                      const Spacer(),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AboutCompanyScreen(
+                                company: widget.company,
+                                logoPath: _getCompanyLogo(widget.company),
+                                color: widget.color,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Row(
+                          children: [
+                            Text(
+                              'About ',
+                              style: GoogleFonts.plusJakartaSans(
+                                color: Colors.white54,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Text(
+                              widget.company,
+                              style: GoogleFonts.plusJakartaSans(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              width: 24,
+                              height: 24,
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF1C1C1E),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: SvgPicture.asset(
+                                _getCompanyLogo(widget.company),
+                                colorFilter: const ColorFilter.mode(
+                                  Colors.white,
+                                  BlendMode.srcIn,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -761,6 +802,23 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
           ),
         ),
       );
+    }
+  }
+
+  String _getCompanyLogo(String company) {
+    switch (company.toLowerCase()) {
+      case 'google':
+        return 'assets/icons/google-178-svgrepo-com.svg';
+      case 'airbnb':
+        return 'assets/icons/airbnb-179-svgrepo-com.svg';
+      case 'spotify':
+        return 'assets/icons/spotify-svgrepo-com.svg';
+      case 'microsoft':
+        return 'assets/icons/microsoft-svgrepo-com.svg';
+      case 'apple':
+        return 'assets/icons/apple-inc-svgrepo-com.svg';
+      default:
+        return 'assets/icons/google-178-svgrepo-com.svg';
     }
   }
 } 

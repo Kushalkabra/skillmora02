@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../screens/jobs_screen.dart';
 import '../screens/profile_screen.dart';
+import '../screens/notification_screen.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -25,7 +26,12 @@ class BottomNavBar extends StatelessWidget {
         // TODO: Navigate to Resume screen
         break;
       case 2: // Notifications
-        // TODO: Navigate to Notifications screen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const NotificationScreen(),
+          ),
+        );
         break;
       case 3: // Profile
         Navigator.pushReplacement(
