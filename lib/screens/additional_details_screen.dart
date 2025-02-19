@@ -198,19 +198,9 @@ class _AdditionalDetailsScreenState extends State<AdditionalDetailsScreen> {
   List<Widget> _getContentForSection(String title) {
     switch (title) {
       case 'Education':
-        return UserData.education.map((edu) => _buildDetailCard(
-          edu['education'] ?? '',
-          '${edu['course']} - ${edu['specification']}',
-          '${edu['startDuration']} - ${edu['endDuration']}',
-          'University: ${edu['university']}\n' +
-          'Course Type: ${edu['courseType']}\n' +
-          '${edu['gradingSystem']}: ${edu['marks']}',
-        )).toList();
+        return UserData.education.map((edu) => _buildDetailCard(edu)).toList();
       case 'Languages Known':
-        return UserData.languages.map((lang) => _buildLanguageCard(
-          lang.keys.first,
-          lang.values.first,
-        )).toList();
+        return UserData.languages.map((lang) => _buildLanguageCard(lang)).toList();
       case 'Courses & Certificates':
         return UserData.certificates.map((cert) => _buildCertificateCard(cert)).toList();
       default:
@@ -218,7 +208,7 @@ class _AdditionalDetailsScreenState extends State<AdditionalDetailsScreen> {
     }
   }
 
-  Widget _buildDetailCard(String title, String subtitle, String duration, String description) {
+  Widget _buildDetailCard(Map<String, dynamic> edu) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
@@ -234,7 +224,7 @@ class _AdditionalDetailsScreenState extends State<AdditionalDetailsScreen> {
             children: [
               Expanded(
                 child: Text(
-                  title,
+                  edu['education'] ?? '',
                   style: GoogleFonts.plusJakartaSans(
                     color: Colors.white,
                     fontSize: 18,
@@ -242,18 +232,43 @@ class _AdditionalDetailsScreenState extends State<AdditionalDetailsScreen> {
                   ),
                 ),
               ),
-              Text(
-                duration,
-                style: GoogleFonts.plusJakartaSans(
-                  color: Colors.white54,
-                  fontSize: 14,
-                ),
+              Row(
+                children: [
+                  Text(
+                    '${edu['startDuration']} - ${edu['endDuration']}',
+                    style: GoogleFonts.plusJakartaSans(
+                      color: Colors.white54,
+                      fontSize: 14,
+                    ),
+                  ),
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: const Icon(Icons.edit, color: Color(0xFFCCFF00), size: 20),
+                    onPressed: () => _showEducationDialog(education: edu),
+                  ),
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                    onPressed: () => _showDeleteConfirmation(
+                      context,
+                      'Education',
+                      () {
+                        setState(() {
+                          UserData.education.remove(edu);
+                        });
+                        _showSectionDetails('Education');
+                      },
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
           const SizedBox(height: 4),
           Text(
-            subtitle,
+            '${edu['course']} - ${edu['specification']}',
             style: GoogleFonts.plusJakartaSans(
               color: const Color(0xFFCCFF00),
               fontSize: 14,
@@ -261,7 +276,9 @@ class _AdditionalDetailsScreenState extends State<AdditionalDetailsScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            description,
+            'University: ${edu['university']}\n' +
+            'Course Type: ${edu['courseType']}\n' +
+            '${edu['gradingSystem']}: ${edu['marks']}',
             style: GoogleFonts.plusJakartaSans(
               color: Colors.white70,
               fontSize: 14,
@@ -272,7 +289,7 @@ class _AdditionalDetailsScreenState extends State<AdditionalDetailsScreen> {
     );
   }
 
-  Widget _buildLanguageCard(String language, String proficiency) {
+  Widget _buildLanguageCard(Map<String, String> lang) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
@@ -284,26 +301,51 @@ class _AdditionalDetailsScreenState extends State<AdditionalDetailsScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            language,
+            lang.keys.first,
             style: GoogleFonts.plusJakartaSans(
               color: Colors.white,
               fontSize: 16,
               fontWeight: FontWeight.w600,
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: const Color(0xFFCCFF00).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              proficiency,
-              style: GoogleFonts.plusJakartaSans(
-                color: const Color(0xFFCCFF00),
-                fontSize: 14,
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFCCFF00).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  lang.values.first,
+                  style: GoogleFonts.plusJakartaSans(
+                    color: const Color(0xFFCCFF00),
+                    fontSize: 14,
+                  ),
+                ),
               ),
-            ),
+              IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                icon: const Icon(Icons.edit, color: Color(0xFFCCFF00), size: 20),
+                onPressed: () => _showLanguageDialog(language: lang),
+              ),
+              IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                onPressed: () => _showDeleteConfirmation(
+                  context,
+                  'Language',
+                  () {
+                    setState(() {
+                      UserData.languages.remove(lang);
+                    });
+                    _showSectionDetails('Languages Known');
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -334,12 +376,37 @@ class _AdditionalDetailsScreenState extends State<AdditionalDetailsScreen> {
                   ),
                 ),
               ),
-              Text(
-                cert['expiryDate'] ?? '',
-                style: GoogleFonts.plusJakartaSans(
-                  color: Colors.white54,
-                  fontSize: 14,
-                ),
+              Row(
+                children: [
+                  Text(
+                    cert['expiryDate'] ?? '',
+                    style: GoogleFonts.plusJakartaSans(
+                      color: Colors.white54,
+                      fontSize: 14,
+                    ),
+                  ),
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: const Icon(Icons.edit, color: Color(0xFFCCFF00), size: 20),
+                    onPressed: () => _showCertificateDialog(certificate: cert),
+                  ),
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                    onPressed: () => _showDeleteConfirmation(
+                      context,
+                      'Certificate',
+                      () {
+                        setState(() {
+                          UserData.certificates.remove(cert);
+                        });
+                        _showSectionDetails('Courses & Certificates');
+                      },
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -383,16 +450,16 @@ class _AdditionalDetailsScreenState extends State<AdditionalDetailsScreen> {
     );
   }
 
-  void _showEducationDialog() {
-    final educationController = TextEditingController();
-    final courseController = TextEditingController();
-    final courseTypeController = TextEditingController();
-    final specificationController = TextEditingController();
-    final universityController = TextEditingController();
-    final startDurationController = TextEditingController();
-    final endDurationController = TextEditingController();
-    final marksController = TextEditingController();
-    String selectedGradingSystem = 'CGPA';
+  void _showEducationDialog({Map<String, dynamic>? education}) {
+    final educationController = TextEditingController(text: education?['education']);
+    final courseController = TextEditingController(text: education?['course']);
+    final courseTypeController = TextEditingController(text: education?['courseType']);
+    final specificationController = TextEditingController(text: education?['specification']);
+    final universityController = TextEditingController(text: education?['university']);
+    final startDurationController = TextEditingController(text: education?['startDuration']);
+    final endDurationController = TextEditingController(text: education?['endDuration']);
+    final marksController = TextEditingController(text: education?['marks']);
+    String selectedGradingSystem = education?['gradingSystem'] ?? 'CGPA';
 
     showDialog(
       context: context,
@@ -407,7 +474,7 @@ class _AdditionalDetailsScreenState extends State<AdditionalDetailsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Add Education',
+                  education == null ? 'Add Education' : 'Edit Education',
                   style: GoogleFonts.plusJakartaSans(
                     color: Colors.white,
                     fontSize: 20,
@@ -417,7 +484,7 @@ class _AdditionalDetailsScreenState extends State<AdditionalDetailsScreen> {
                 const SizedBox(height: 20),
                 // Education Dropdown
                 DropdownButtonFormField<String>(
-                  value: null,
+                  value: education?['education'],
                   hint: Text('Select Education', 
                     style: GoogleFonts.plusJakartaSans(color: Colors.white54)),
                   items: ['B.Tech', 'M.Tech', 'BCA', 'MCA', 'BSc', 'MSc']
@@ -439,7 +506,7 @@ class _AdditionalDetailsScreenState extends State<AdditionalDetailsScreen> {
                 const SizedBox(height: 12),
                 // Course Dropdown
                 DropdownButtonFormField<String>(
-                  value: null,
+                  value: education?['course'],
                   hint: Text('Select Course', 
                     style: GoogleFonts.plusJakartaSans(color: Colors.white54)),
                   items: ['Computer Science', 'Information Technology', 'Electronics']
@@ -461,7 +528,7 @@ class _AdditionalDetailsScreenState extends State<AdditionalDetailsScreen> {
                 const SizedBox(height: 12),
                 // Course Type Dropdown
                 DropdownButtonFormField<String>(
-                  value: null,
+                  value: education?['courseType'],
                   hint: Text('Select Course Type', 
                     style: GoogleFonts.plusJakartaSans(color: Colors.white54)),
                   items: ['Full Time', 'Part Time', 'Distance Learning']
@@ -483,7 +550,7 @@ class _AdditionalDetailsScreenState extends State<AdditionalDetailsScreen> {
                 const SizedBox(height: 12),
                 // Specification Dropdown
                 DropdownButtonFormField<String>(
-                  value: null,
+                  value: education?['specification'],
                   hint: Text('Select Specification', 
                     style: GoogleFonts.plusJakartaSans(color: Colors.white54)),
                   items: ['Software Engineering', 'Data Science', 'AI/ML']
@@ -505,7 +572,7 @@ class _AdditionalDetailsScreenState extends State<AdditionalDetailsScreen> {
                 const SizedBox(height: 12),
                 // University Dropdown
                 DropdownButtonFormField<String>(
-                  value: null,
+                  value: education?['university'],
                   hint: Text('Select University', 
                     style: GoogleFonts.plusJakartaSans(color: Colors.white54)),
                   items: ['University 1', 'University 2', 'University 3']
@@ -567,26 +634,34 @@ class _AdditionalDetailsScreenState extends State<AdditionalDetailsScreen> {
                     const SizedBox(width: 12),
                     ElevatedButton(
                       onPressed: () {
+                        final newEducation = {
+                          'education': educationController.text,
+                          'course': courseController.text,
+                          'courseType': courseTypeController.text,
+                          'specification': specificationController.text,
+                          'university': universityController.text,
+                          'startDuration': startDurationController.text,
+                          'endDuration': endDurationController.text,
+                          'gradingSystem': selectedGradingSystem,
+                          'marks': marksController.text,
+                        };
+                        
                         setState(() {
-                          UserData.education.add({
-                            'education': educationController.text,
-                            'course': courseController.text,
-                            'courseType': courseTypeController.text,
-                            'specification': specificationController.text,
-                            'university': universityController.text,
-                            'startDuration': startDurationController.text,
-                            'endDuration': endDurationController.text,
-                            'gradingSystem': selectedGradingSystem,
-                            'marks': marksController.text,
-                          });
+                          if (education == null) {
+                            UserData.education.add(newEducation);
+                          } else {
+                            final index = UserData.education.indexOf(education);
+                            UserData.education[index] = newEducation;
+                          }
                         });
                         Navigator.pop(context);
+                        _showSectionDetails('Education');
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFCCFF00),
                       ),
                       child: Text(
-                        'Save',
+                        education == null ? 'Save' : 'Update',
                         style: GoogleFonts.plusJakartaSans(
                           color: Colors.black,
                           fontWeight: FontWeight.w600,
@@ -603,28 +678,42 @@ class _AdditionalDetailsScreenState extends State<AdditionalDetailsScreen> {
     );
   }
 
-  void _showLanguageDialog() {
-    final languageController = TextEditingController();
-    String selectedProficiency = 'Beginner';
+  void _showLanguageDialog({Map<String, String>? language}) {
+    final languageController = TextEditingController(
+      text: language?.keys.first
+    );
+    String selectedProficiency = language?.values.first ?? 'Beginner';
 
     showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => Dialog(
+      builder: (BuildContext dialogContext) => StatefulBuilder(
+        builder: (BuildContext context, StateSetter dialogSetState) => Dialog(
           backgroundColor: const Color(0xFF1C1C1E),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          child: Padding(
+          child: Container(
             padding: const EdgeInsets.all(20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Add Language',
-                  style: GoogleFonts.plusJakartaSans(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Languages Known',
+                      style: GoogleFonts.plusJakartaSans(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    IconButton(
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      icon: const Icon(Icons.close, color: Colors.white),
+                      onPressed: () => Navigator.pop(dialogContext),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 20),
                 _buildTextField('Language', languageController),
@@ -635,60 +724,58 @@ class _AdditionalDetailsScreenState extends State<AdditionalDetailsScreen> {
                       .map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
-                      child: Text(value),
+                      child: Text(
+                        value,
+                        style: GoogleFonts.plusJakartaSans(color: Colors.white),
+                      ),
                     );
                   }).toList(),
                   onChanged: (String? newValue) {
-                    setState(() {
+                    dialogSetState(() {
                       selectedProficiency = newValue!;
                     });
                   },
                   style: GoogleFonts.plusJakartaSans(color: Colors.white),
                   dropdownColor: const Color(0xFF1C1C1E),
-                  decoration: InputDecoration(
-                    labelText: 'Proficiency',
-                    labelStyle: GoogleFonts.plusJakartaSans(color: Colors.white70),
-                    filled: true,
-                    fillColor: Colors.black,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
+                  decoration: _getDropdownDecoration('Proficiency'),
                 ),
                 const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text(
-                        'Cancel',
-                        style: GoogleFonts.plusJakartaSans(color: Colors.white),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFCCFF00),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    ElevatedButton(
-                      onPressed: () {
+                    onPressed: () {
+                      if (languageController.text.isNotEmpty) {
+                        final newLanguage = {
+                          languageController.text: selectedProficiency,
+                        };
+                        
                         setState(() {
-                          UserData.languages.add({
-                            languageController.text: selectedProficiency,
-                          });
+                          if (language == null) {
+                            UserData.languages.add(newLanguage);
+                          } else {
+                            final index = UserData.languages.indexOf(language);
+                            UserData.languages[index] = newLanguage;
+                          }
                         });
-                        Navigator.pop(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFCCFF00),
-                      ),
-                      child: Text(
-                        'Save',
-                        style: GoogleFonts.plusJakartaSans(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        Navigator.pop(dialogContext);
+                        _showSectionDetails('Languages Known');
+                      }
+                    },
+                    child: Text(
+                      'Save And Continue',
+                      style: GoogleFonts.plusJakartaSans(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ],
+                  ),
                 ),
               ],
             ),
@@ -698,72 +785,72 @@ class _AdditionalDetailsScreenState extends State<AdditionalDetailsScreen> {
     );
   }
 
-  void _showCertificateDialog() {
-    final certificateNameController = TextEditingController();
-    final certificateUrlController = TextEditingController();
-    final issueByController = TextEditingController();
-    final expiryDateController = TextEditingController();
-    String? isCertificateExpired;
-    String? selectedFile;
+  void _showCertificateDialog({Map<String, dynamic>? certificate}) {
+    final certificateNameController = TextEditingController(text: certificate?['title']);
+    final certificateUrlController = TextEditingController(text: certificate?['url']);
+    final issueByController = TextEditingController(text: certificate?['issuer']);
+    final expiryDateController = TextEditingController(text: certificate?['expiryDate']);
+    String? isCertificateExpired = certificate?['isExpired'];
+    String? selectedFile = certificate?['certificateImage'];
 
     showDialog(
       context: context,
-      builder: (context) => Dialog(
-        backgroundColor: const Color(0xFF1C1C1E),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: SingleChildScrollView(
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Add Courses & Certificate',
-                        style: GoogleFonts.plusJakartaSans(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
+      builder: (BuildContext dialogContext) => StatefulBuilder(
+        builder: (BuildContext context, StateSetter dialogSetState) => Dialog(
+          backgroundColor: const Color(0xFF1C1C1E),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: SingleChildScrollView(
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          certificate == null ? 'Add Certificate' : 'Edit Certificate',
+                          style: GoogleFonts.plusJakartaSans(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                    IconButton(
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                      icon: const Icon(Icons.close, color: Colors.white),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                // Certificate Name
-                _buildTextField(
-                  'Certificate Name',
-                  certificateNameController,
-                  required: true,
-                ),
-                const SizedBox(height: 12),
-                // Certificate URL
-                _buildTextField(
-                  'Certificate Url',
-                  certificateUrlController,
-                ),
-                const SizedBox(height: 12),
-                // Issue By
-                _buildTextField(
-                  'Issue By',
-                  issueByController,
-                  required: true,
-                ),
-                const SizedBox(height: 12),
-                // Is Certificate Expired
-                StatefulBuilder(
-                  builder: (context, setState) => DropdownButtonFormField<String>(
+                      IconButton(
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        icon: const Icon(Icons.close, color: Colors.white),
+                        onPressed: () => Navigator.pop(dialogContext),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  // Certificate Name
+                  _buildTextField(
+                    'Certificate Name',
+                    certificateNameController,
+                    required: true,
+                  ),
+                  const SizedBox(height: 12),
+                  // Certificate URL
+                  _buildTextField(
+                    'Certificate Url',
+                    certificateUrlController,
+                  ),
+                  const SizedBox(height: 12),
+                  // Issue By
+                  _buildTextField(
+                    'Issue By',
+                    issueByController,
+                    required: true,
+                  ),
+                  const SizedBox(height: 12),
+                  // Is Certificate Expired
+                  DropdownButtonFormField<String>(
                     value: isCertificateExpired,
                     hint: Text(
                       'Is Certificate Expired ?',
@@ -779,7 +866,7 @@ class _AdditionalDetailsScreenState extends State<AdditionalDetailsScreen> {
                       );
                     }).toList(),
                     onChanged: (String? newValue) {
-                      setState(() {
+                      dialogSetState(() {
                         isCertificateExpired = newValue;
                       });
                     },
@@ -787,107 +874,115 @@ class _AdditionalDetailsScreenState extends State<AdditionalDetailsScreen> {
                     dropdownColor: const Color(0xFF1C1C1E),
                     decoration: _getDropdownDecoration(''),
                   ),
-                ),
-                const SizedBox(height: 12),
-                // Expiry Date
-                _buildTextField(
-                  'Expiry Date',
-                  expiryDateController,
-                  required: true,
-                ),
-                const SizedBox(height: 16),
-                // Certificate Image
-                Text(
-                  'Certificate Image',
-                  style: GoogleFonts.plusJakartaSans(
-                    color: Colors.white70,
-                    fontSize: 14,
+                  const SizedBox(height: 12),
+                  // Expiry Date
+                  _buildTextField(
+                    'Expiry Date',
+                    expiryDateController,
+                    required: true,
                   ),
-                ),
-                const SizedBox(height: 8),
-                StatefulBuilder(
-                  builder: (context, setState) => GestureDetector(
-                    onTap: () {
-                      // TODO: Implement file picker
-                      setState(() {
-                        selectedFile = 'selected_file.pdf';
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.white24,
-                          width: 1,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.file_upload_outlined,
-                            color: Colors.white54,
+                  const SizedBox(height: 16),
+                  // Certificate Image
+                  Text(
+                    'Certificate Image',
+                    style: GoogleFonts.plusJakartaSans(
+                      color: Colors.white70,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  StatefulBuilder(
+                    builder: (context, setState) => GestureDetector(
+                      onTap: () {
+                        // TODO: Implement file picker
+                        setState(() {
+                          selectedFile = 'selected_file.pdf';
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.white24,
+                            width: 1,
                           ),
-                          const SizedBox(width: 8),
-                          Text(
-                            selectedFile ?? 'Choose File to upload',
-                            style: GoogleFonts.plusJakartaSans(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.file_upload_outlined,
                               color: Colors.white54,
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 8),
+                            Text(
+                              selectedFile ?? 'Choose File to upload',
+                              style: GoogleFonts.plusJakartaSans(
+                                color: Colors.white54,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Files Supported: PDF, JPG, PNG',
-                  style: GoogleFonts.plusJakartaSans(
-                    color: Colors.white38,
-                    fontSize: 12,
+                  const SizedBox(height: 8),
+                  Text(
+                    'Files Supported: PDF, JPG, PNG',
+                    style: GoogleFonts.plusJakartaSans(
+                      color: Colors.white38,
+                      fontSize: 12,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 24),
-                // Save Button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (certificateNameController.text.isNotEmpty &&
-                          issueByController.text.isNotEmpty &&
-                          expiryDateController.text.isNotEmpty) {
-                        setState(() {
-                          UserData.certificates.add({
+                  const SizedBox(height: 24),
+                  // Save Button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFCCFF00),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () {
+                        if (certificateNameController.text.isNotEmpty &&
+                            issueByController.text.isNotEmpty &&
+                            expiryDateController.text.isNotEmpty) {
+                          final newCertificate = {
                             'title': certificateNameController.text,
                             'url': certificateUrlController.text,
                             'issuer': issueByController.text,
                             'isExpired': isCertificateExpired,
                             'expiryDate': expiryDateController.text,
                             'certificateImage': selectedFile,
+                          };
+                          
+                          setState(() {
+                            if (certificate == null) {
+                              UserData.certificates.add(newCertificate);
+                            } else {
+                              final index = UserData.certificates.indexOf(certificate);
+                              UserData.certificates[index] = newCertificate;
+                            }
                           });
-                        });
-                        Navigator.pop(context);
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFCCFF00),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: Text(
-                      'Save And Continue',
-                      style: GoogleFonts.plusJakartaSans(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
+                          Navigator.pop(dialogContext);
+                          _showSectionDetails('Courses & Certificates');
+                        }
+                      },
+                      child: Text(
+                        certificate == null ? 'Save' : 'Update',
+                        style: GoogleFonts.plusJakartaSans(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -951,6 +1046,70 @@ class _AdditionalDetailsScreenState extends State<AdditionalDetailsScreen> {
         borderSide: BorderSide.none,
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    );
+  }
+
+  void _showDeleteConfirmation(BuildContext context, String title, VoidCallback onDelete) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: const Color(0xFF1C1C1E),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Delete $title?',
+                style: GoogleFonts.plusJakartaSans(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'This action cannot be undone.',
+                style: GoogleFonts.plusJakartaSans(
+                  color: Colors.white70,
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(
+                      'Cancel',
+                      style: GoogleFonts.plusJakartaSans(color: Colors.white),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      onDelete();
+                    },
+                    child: Text(
+                      'Delete',
+                      style: GoogleFonts.plusJakartaSans(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 } 
