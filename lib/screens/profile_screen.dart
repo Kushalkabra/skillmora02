@@ -5,6 +5,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../models/user_data.dart';
+import 'additional_details_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -182,7 +183,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           const SizedBox(height: 16),
                           ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const AdditionalDetailsScreen(),
+                                ),
+                              );
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.black,
                               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -194,7 +202,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  'Download Resume',
+                                  'Add Details',
                                   style: GoogleFonts.plusJakartaSans(
                                     color: const Color(0xFFCCFF00),
                                     fontWeight: FontWeight.w600,
@@ -202,7 +210,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ),
                                 const SizedBox(width: 8),
                                 const Icon(
-                                  Icons.download_rounded,
+                                  Icons.add_circle_outline,
                                   color: Colors.white,
                                   size: 20,
                                 ),
@@ -254,14 +262,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           _buildNeonDivider(),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: _buildSection(
-                              context,
-                              'Languages Known',
-                              null,
-                              items: UserData.languages.map((lang) => 
-                                _buildLanguageItem(lang.keys.first, lang.values.first)
-                              ).toList(),
-                            ),
+                            child: _buildProjectsSection(),
+                          ),
+                          _buildNeonDivider(),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: _buildWorkExperienceSection(),
                           ),
                           // Add bottom padding for scrolling
                           const SizedBox(height: 24),
@@ -730,30 +736,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildLanguageItem(String language, String level) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            language,
-            style: GoogleFonts.plusJakartaSans(
-              color: Colors.white70,
-            ),
-          ),
-          Text(
-            level,
-            style: GoogleFonts.plusJakartaSans(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildChip(String label) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -781,6 +763,527 @@ class _ProfileScreenState extends State<ProfileScreen> {
         decoration: const BoxDecoration(
           color: Color(0xFFCCFF00),  // Solid neon color
         ),
+      ),
+    );
+  }
+
+  Widget _buildProjectsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Projects',
+              style: GoogleFonts.plusJakartaSans(
+                color: const Color(0xFFCCFF00),
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.add, color: Color(0xFFCCFF00)),
+                  onPressed: () => _showProjectEditDialog(null, isNew: true),
+                ),
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        ...UserData.projects.map((project) => _buildProjectCard(project)).toList(),
+      ],
+    );
+  }
+
+  Widget _buildProjectCard(Map<String, dynamic> project) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1C1C1E),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  project['title'],
+                  style: GoogleFonts.plusJakartaSans(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Row(
+                children: [
+                  Text(
+                    project['duration'],
+                    style: GoogleFonts.plusJakartaSans(
+                      color: Colors.white54,
+                      fontSize: 14,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.edit_outlined,
+                      size: 20,
+                      color: Color(0xFFCCFF00),
+                    ),
+                    onPressed: () => _showProjectEditDialog(project),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            project['description'],
+            style: GoogleFonts.plusJakartaSans(
+              color: Colors.white70,
+              fontSize: 14,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: List<Widget>.from(
+              (project['technologies'] as List<String>).map(
+                (tech) => Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFCCFF00).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    tech,
+                    style: GoogleFonts.plusJakartaSans(
+                      color: const Color(0xFFCCFF00),
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWorkExperienceSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Work Experience',
+              style: GoogleFonts.plusJakartaSans(
+                color: const Color(0xFFCCFF00),
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.add, color: Color(0xFFCCFF00)),
+                  onPressed: () => _showWorkExperienceEditDialog(null, isNew: true),
+                ),
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        ...UserData.workExperience.map((work) => _buildWorkCard(work)).toList(),
+      ],
+    );
+  }
+
+  Widget _buildWorkCard(Map<String, dynamic> work) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1C1C1E),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  work['role'],
+                  style: GoogleFonts.plusJakartaSans(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Row(
+                children: [
+                  Text(
+                    work['duration'],
+                    style: GoogleFonts.plusJakartaSans(
+                      color: Colors.white54,
+                      fontSize: 14,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.edit_outlined,
+                      size: 20,
+                      color: Color(0xFFCCFF00),
+                    ),
+                    onPressed: () => _showWorkExperienceEditDialog(work),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '${work['company']} • ${work['location']}',
+            style: GoogleFonts.plusJakartaSans(
+              color: const Color(0xFFCCFF00),
+              fontSize: 14,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            work['description'],
+            style: GoogleFonts.plusJakartaSans(
+              color: Colors.white70,
+              fontSize: 14,
+            ),
+          ),
+          const SizedBox(height: 12),
+          ...((work['achievements'] as List<String>).map((achievement) =>
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    '• ',
+                    style: TextStyle(color: Colors.white70),
+                  ),
+                  Expanded(
+                    child: Text(
+                      achievement,
+                      style: GoogleFonts.plusJakartaSans(
+                        color: Colors.white70,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )).toList(),
+        ],
+      ),
+    );
+  }
+
+  void _showProjectEditDialog(Map<String, dynamic>? project, {bool isNew = false}) {
+    final titleController = TextEditingController(text: project?['title'] ?? '');
+    final descController = TextEditingController(text: project?['description'] ?? '');
+    final durationController = TextEditingController(text: project?['duration'] ?? '');
+    final linkController = TextEditingController(text: project?['link'] ?? '');
+    final techController = TextEditingController();
+    List<String> technologies = List<String>.from(project?['technologies'] ?? []);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: const Color(0xFF1C1C1E),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isNew ? 'Add Project' : 'Edit Project',
+                    style: GoogleFonts.plusJakartaSans(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  _buildEditTextField('Project Title', titleController),
+                  const SizedBox(height: 12),
+                  _buildEditTextField('Description', descController, maxLines: 3),
+                  const SizedBox(height: 12),
+                  _buildEditTextField('Duration', durationController),
+                  const SizedBox(height: 12),
+                  _buildEditTextField('Project Link', linkController),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildEditTextField('Add Technology', techController),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.add, color: Color(0xFFCCFF00)),
+                        onPressed: () {
+                          if (techController.text.isNotEmpty) {
+                            setState(() {
+                              technologies.add(techController.text);
+                            });
+                            techController.clear();
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: technologies.map((tech) {
+                      return Chip(
+                        label: Text(tech),
+                        backgroundColor: const Color(0xFFCCFF00).withOpacity(0.1),
+                        labelStyle: GoogleFonts.plusJakartaSans(
+                          color: const Color(0xFFCCFF00),
+                        ),
+                        deleteIcon: const Icon(Icons.close, size: 16),
+                        onDeleted: () {
+                          setState(() {
+                            technologies.remove(tech);
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text(
+                          'Cancel',
+                          style: GoogleFonts.plusJakartaSans(color: Colors.white),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      ElevatedButton(
+                        onPressed: () {
+                          final newProject = {
+                            'title': titleController.text,
+                            'description': descController.text,
+                            'duration': durationController.text,
+                            'link': linkController.text,
+                            'technologies': technologies,
+                          };
+                          setState(() {
+                            if (isNew) {
+                              UserData.projects.add(newProject);
+                            } else {
+                              final index = UserData.projects.indexOf(project!);
+                              UserData.projects[index] = newProject;
+                            }
+                          });
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFCCFF00),
+                        ),
+                        child: Text(
+                          'Save',
+                          style: GoogleFonts.plusJakartaSans(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showWorkExperienceEditDialog(Map<String, dynamic>? work, {bool isNew = false}) {
+    final roleController = TextEditingController(text: work?['role'] ?? '');
+    final companyController = TextEditingController(text: work?['company'] ?? '');
+    final durationController = TextEditingController(text: work?['duration'] ?? '');
+    final locationController = TextEditingController(text: work?['location'] ?? '');
+    final descController = TextEditingController(text: work?['description'] ?? '');
+    final achievementController = TextEditingController();
+    List<String> achievements = List<String>.from(work?['achievements'] ?? []);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: const Color(0xFF1C1C1E),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isNew ? 'Add Work Experience' : 'Edit Work Experience',
+                    style: GoogleFonts.plusJakartaSans(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  _buildEditTextField('Role', roleController),
+                  const SizedBox(height: 12),
+                  _buildEditTextField('Company', companyController),
+                  const SizedBox(height: 12),
+                  _buildEditTextField('Duration', durationController),
+                  const SizedBox(height: 12),
+                  _buildEditTextField('Location', locationController),
+                  const SizedBox(height: 12),
+                  _buildEditTextField('Description', descController, maxLines: 3),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildEditTextField('Add Achievement', achievementController),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.add, color: Color(0xFFCCFF00)),
+                        onPressed: () {
+                          if (achievementController.text.isNotEmpty) {
+                            setState(() {
+                              achievements.add(achievementController.text);
+                            });
+                            achievementController.clear();
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  ...achievements.map((achievement) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        children: [
+                          const Text('• ', style: TextStyle(color: Colors.white70)),
+                          Expanded(
+                            child: Text(
+                              achievement,
+                              style: GoogleFonts.plusJakartaSans(
+                                color: Colors.white70,
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close, size: 16, color: Colors.white54),
+                            onPressed: () {
+                              setState(() {
+                                achievements.remove(achievement);
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text(
+                          'Cancel',
+                          style: GoogleFonts.plusJakartaSans(color: Colors.white),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      ElevatedButton(
+                        onPressed: () {
+                          final newWork = {
+                            'role': roleController.text,
+                            'company': companyController.text,
+                            'duration': durationController.text,
+                            'location': locationController.text,
+                            'description': descController.text,
+                            'achievements': achievements,
+                          };
+                          setState(() {
+                            if (isNew) {
+                              UserData.workExperience.add(newWork);
+                            } else {
+                              final index = UserData.workExperience.indexOf(work!);
+                              UserData.workExperience[index] = newWork;
+                            }
+                          });
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFCCFF00),
+                        ),
+                        child: Text(
+                          'Save',
+                          style: GoogleFonts.plusJakartaSans(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildEditTextField(String label, TextEditingController controller, {int maxLines = 1}) {
+    return TextField(
+      controller: controller,
+      maxLines: maxLines,
+      style: GoogleFonts.plusJakartaSans(color: Colors.white),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: GoogleFonts.plusJakartaSans(color: Colors.white70),
+        filled: true,
+        fillColor: Colors.black,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       ),
     );
   }
